@@ -49,7 +49,38 @@ python reconstruct_sparse_3d.py
 
 Output: `results/sparse_tray.ply`.
 
-You can open `.ply` files in MeshLab, Blender, CloudCompare, or another 3D viewer.
+View it interactively with:
+
+```bash
+python view_3d.py
+```
+
+The viewer automatically opens the best available result in this order: the
+Poisson mesh, dense COLMAP cloud, COLMAP sparse cloud, then the educational
+sparse cloud. On systems where COLMAP dense reconstruction requires unavailable
+CUDA support, the script exits successfully after creating the COLMAP sparse
+fallback.
+
+You can also open `.ply` files in MeshLab, Blender, CloudCompare, or another 3D viewer.
+
+## Single-photo 3D rendering
+
+A front-facing photo can be converted into a textured, shallow 2.5D mesh:
+
+```bash
+python single_image_3d.py /path/to/photo.HEIC
+python view_3d.py
+```
+
+This produces a rotatable front, rim, and back, but cannot recover details that
+are hidden in the one source photograph.
+
+For an ordered full rotation, generate a two-sided mesh using all photographs:
+
+```bash
+python multiview_3d.py /path/to/IMG_*.HEIC
+python view_3d.py
+```
 
 ## 5. Optional: stronger dense 3D reconstruction with COLMAP
 
@@ -58,6 +89,9 @@ After installing COLMAP and ensuring the `colmap` command works:
 ```bash
 python run_colmap.py
 ```
+
+If sparse models already exist and only the dense stage needs to be rerun, use
+`python run_colmap.py --reuse`.
 
 Expected outputs include:
 - `results/dense_tray.ply`
