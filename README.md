@@ -82,6 +82,9 @@ python multiview_3d.py /path/to/IMG_*.HEIC
 python view_3d.py
 ```
 
+The multiview generator retains up to 2400 pixels per source image and creates
+the high-resolution result `results/multiview_tray_highres.ply`.
+
 ## 5. Optional: stronger dense 3D reconstruction with COLMAP
 
 After installing COLMAP and ensuring the `colmap` command works:

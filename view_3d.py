@@ -10,6 +10,7 @@ RESULTS = ROOT / "results"
 CANDIDATES = (
     RESULTS / "tray_mesh_poisson.ply",
     RESULTS / "dense_tray.ply",
+    RESULTS / "multiview_tray_highres.ply",
     RESULTS / "multiview_tray.ply",
     RESULTS / "single_image_tray.ply",
     RESULTS / "colmap_sparse_tray.ply",

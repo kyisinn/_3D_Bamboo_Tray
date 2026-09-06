@@ -11,7 +11,7 @@ from single_image_3d import find_tray, load_image, write_ply
 ROOT = Path(__file__).resolve().parent
 
 
-def prepare(path, max_size=1400):
+def prepare(path, max_size=2400):
     image = load_image(path)
     scale = min(1.0, max_size / max(image.shape[:2]))
     if scale < 1:
@@ -31,7 +31,7 @@ def sample(image, ellipse, u, v):
     return image[y, x][::-1]
 
 
-def build(front_view, back_view, thickness, rings=72, slices=240):
+def build(front_view, back_view, thickness, rings=144, slices=480):
     vertices, colors, faces = [], [], []
 
     def vertex(x, y, z, color):
@@ -81,7 +81,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("images", nargs="+", type=Path)
     parser.add_argument("--output", type=Path,
-                        default=ROOT / "results" / "multiview_tray.ply")
+                        default=ROOT / "results" / "multiview_tray_highres.ply")
     args = parser.parse_args()
     paths = sorted(dict.fromkeys(path.resolve() for path in args.images))
     if len(paths) < 6:
