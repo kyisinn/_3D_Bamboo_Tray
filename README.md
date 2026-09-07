@@ -85,7 +85,37 @@ python view_3d.py
 The multiview generator retains up to 2400 pixels per source image and creates
 the high-resolution result `results/multiview_tray_highres.ply`.
 
+Remove the background and lower connected hand regions before meshing with:
+
+```bash
+python remove_hands_background.py
+python multiview_3d.py images/new_images_masked/*.png
+```
+
+The first command writes transparent tray-only images to
+`images/new_images_masked/` and binary masks to `masks/new_images/`. Removed
+pixels remain empty; the script does not recover or generate hidden tray parts.
+
+For precise manual masks, run `python manual_tray_mask.py`. Left-click around
+the visible rim and press Enter to add the tray. Press H, outline each hand, and
+press Enter to subtract it. Press N to save and continue to the next image.
+
+For automatic AI segmentation after installing Meta SAM 2, run
+`python auto_sam2.py --limit 3` to test three images, then `python auto_sam2.py`
+for the complete set. It writes masks to `masks/sam2/` and transparent images to
+`images/new_images_sam2/` without inpainting removed regions.
+
 ## 5. Optional: stronger dense 3D reconstruction with COLMAP
+
+To use all JPG/PNG images in `images/`, including the nested `images/new_images/`
+folder, remove hands and create the matching COLMAP masks first:
+
+```bash
+python remove_hands_background.py
+```
+
+This creates masked images in `images/colmap_images/` and masks in
+`masks/colmap_images/`. The COLMAP script uses those directories automatically.
 
 After installing COLMAP and ensuring the `colmap` command works:
 

@@ -1,0 +1,32 @@
+# Python environments and caches
+.venv/
+.venv*/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# macOS and editor files
+.DS_Store
+.vscode/
+
+# Local source media and generated image derivatives
+heic_originals/
+images/
+masks/
+
+# COLMAP and model-processing intermediates
+colmap_workspace/
+
+# Generated reconstruction and rendering results
+results/
+
+# Local model and tool caches
+.cache/
+.huggingface/
+*.safetensors
+*.pt
+*.pth
+
+# Local configuration and run logs
+RenderOption_*.json
+*.log

@@ -1,4 +1,4 @@
-"""Run a full COLMAP pipeline if the `colmap` command is installed.
+"""Run a masked full COLMAP pipeline if the `colmap` command is installed.
 Outputs a dense point cloud and, when possible, a Poisson mesh.
 """
 from pathlib import Path
@@ -10,15 +10,23 @@ args=parser.parse_args()
 
 if shutil.which('colmap') is None:
     raise SystemExit('COLMAP is not installed or not on PATH. Install COLMAP on your Mac, then rerun this script.')
-root=Path(__file__).resolve().parent; images=root/'images'; ws=root/'colmap_workspace'; ws.mkdir(exist_ok=True)
+root=Path(__file__).resolve().parent
+images=root/'images'/'new_images_sam2'
+masks=root/'masks'/'sam2'
+ws=root/'colmap_workspace'; ws.mkdir(exist_ok=True)
 db=ws/'database.db'; sparse=ws/'sparse'; dense=ws/'dense'; sparse.mkdir(exist_ok=True)
+
+if (not images.is_dir() or not any(images.rglob('*.png'))
+    or not masks.is_dir() or not any(masks.rglob('*.png'))):
+    raise SystemExit('No masked PNG images found. Run auto_sam2.py first.')
 
 def run(*args):
     print('\n>', ' '.join(map(str,args))); subprocess.run(list(map(str,args)),check=True)
 
 if not args.reuse:
     if db.exists(): db.unlink()
-    run('colmap','feature_extractor','--database_path',db,'--image_path',images,'--ImageReader.single_camera','1')
+    run('colmap','feature_extractor','--database_path',db,'--image_path',images,
+        '--ImageReader.mask_path',masks,'--ImageReader.single_camera','1')
     run('colmap','sequential_matcher','--database_path',db)
     run('colmap','mapper','--database_path',db,'--image_path',images,'--output_path',sparse)
 models=sorted(path for path in sparse.iterdir() if path.is_dir())
