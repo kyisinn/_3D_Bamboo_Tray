@@ -11,14 +11,14 @@ __pycache__/
 
 # Local source media and generated image derivatives
 heic_originals/
-images/new_images/
-#masks/
+images/
+masks/
 
 # COLMAP and model-processing intermediates
 colmap_workspace/
 
 # Generated reconstruction and rendering results
-results/
+#results/
 
 # Local model and tool caches
 .cache/
