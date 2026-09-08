@@ -6,6 +6,7 @@ import argparse, subprocess, shutil, tempfile
 
 parser=argparse.ArgumentParser()
 parser.add_argument('--reuse', action='store_true', help='reuse the existing sparse models')
+parser.add_argument('--gpu', action='store_true', help='use CUDA for SIFT and dense reconstruction')
 args=parser.parse_args()
 
 if shutil.which('colmap') is None:
@@ -25,9 +26,15 @@ def run(*args):
 
 if not args.reuse:
     if db.exists(): db.unlink()
+    extraction_options = ['--FeatureExtraction.use_gpu', '1'] if args.gpu else [
+        '--FeatureExtraction.use_gpu', '0', '--FeatureExtraction.num_threads', '4']
+    matching_options = ['--FeatureMatching.use_gpu', '1'] if args.gpu else [
+        '--FeatureMatching.use_gpu', '0', '--FeatureMatching.num_threads', '4']
     run('colmap','feature_extractor','--database_path',db,'--image_path',images,
-        '--ImageReader.mask_path',masks,'--ImageReader.single_camera','1')
-    run('colmap','sequential_matcher','--database_path',db)
+        '--ImageReader.mask_path',masks,'--ImageReader.single_camera','1',
+        *extraction_options)
+    run('colmap','sequential_matcher','--database_path',db,
+        *matching_options)
     run('colmap','mapper','--database_path',db,'--image_path',images,'--output_path',sparse)
 models=sorted(path for path in sparse.iterdir() if path.is_dir())
 if not models: raise SystemExit('COLMAP could not create a sparse model.')
@@ -57,7 +64,8 @@ run('colmap','model_converter','--input_path',model,
 if dense.exists(): shutil.rmtree(dense)
 run('colmap','image_undistorter','--image_path',images,'--input_path',model,'--output_path',dense,'--output_type','COLMAP')
 try:
-    run('colmap','patch_match_stereo','--workspace_path',dense,'--workspace_format','COLMAP','--PatchMatchStereo.geom_consistency','true')
+    run('colmap','patch_match_stereo','--workspace_path',dense,'--workspace_format','COLMAP',
+        '--PatchMatchStereo.geom_consistency','true','--PatchMatchStereo.max_image_size','1080')
 except subprocess.CalledProcessError:
     print('\nDense reconstruction is unavailable (this COLMAP build may require CUDA).')
     print('Created the best sparse fallback:', sparse_ply)
