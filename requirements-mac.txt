@@ -1,0 +1,8 @@
+# Standalone Gaussian Splat PLY Viewer
+
+# Apple Silicon macOS (M1 / M2 / M3 / M4)
+
+numpy==2.5.3
+opencv-python==5.0.0.93
+torch==2.9.1
+gsplat
